@@ -1,5 +1,6 @@
 import React, { useEffect, useState, FormEvent, ChangeEvent } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 interface User {
   id: string;
@@ -67,7 +68,7 @@ function RegisterForm({ onRegister, user: initialUser, onClose, onUpdate }: Regi
         user.id ? `/api/user/${user.id}` : "/api/user/register",
         user
       );
-      alert(`${user.name} ${user.id ? 'updated' : 'registered'} successfully`);
+      toast.success(`${user.name} ${user.id ? 'updated' : 'registered'} successfully`);
       (user.id ? onUpdate : onRegister)?.(response.data.user || response.data);
       onClose?.();
     } catch (error: any) {

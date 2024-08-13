@@ -4,6 +4,7 @@ import SideBar from "@/components/SideBar";
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -19,8 +20,8 @@ export default function RootLayout({
     try {
       const response = await axios.get("/api/auth/logout");
       if (response.data.success) {
-        alert(response.data.message);
-        router.push("/login");
+        toast.success(`${name} ${response.data.message}`);
+        router.push("/");
       }
     } catch (error) {
       console.error("Error logging out:", error);

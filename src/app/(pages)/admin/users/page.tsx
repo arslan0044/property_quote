@@ -5,7 +5,7 @@ import { FaRegTrashAlt, FaUserEdit } from "react-icons/fa";
 import Link from "next/link";
 import RegisterForm from "@/components/admin/user/RegisterForm";
 import Image from "next/image";
-
+import { toast } from 'react-toastify';
 interface User {
   id: string;
   name: string;
@@ -20,21 +20,6 @@ interface UserListProps {
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
 }
 
-interface RegisterFormProps {
-  onRegister?: (newUser: User) => void;
-  user?: User;
-  onClose?: () => void;
-  onUpdate?: (updatedUser: User) => void;
-}
-
-const initialUserState: User = {
-  id: "",
-  name: "",
-  email: "",
-  username: "",
-  isAdmin: false,
-  password: "",
-};
 
 const ConfirmDialog: React.FC<{
   isOpen: boolean;
@@ -47,16 +32,16 @@ const ConfirmDialog: React.FC<{
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg">
-        <p className="mb-4">{message}</p>
+        <p className="mb-4 text-3xl">{message}</p>
         <div className="flex justify-end">
           <button
-            className="mr-2 px-4 py-2 bg-gray-200 rounded"
+            className="mr-2 text-3xl px-4 py-2 bg-gray-200 rounded"
             onClick={onClose}
           >
             Cancel
           </button>
           <button
-            className="px-4 py-2 bg-red-500 text-white rounded"
+            className="px-4 py-2 text-3xl bg-red-500 text-white rounded"
             onClick={() => {
               onConfirm();
               onClose();
@@ -101,9 +86,9 @@ const UserList: React.FC<UserListProps> = ({ users, setUsers }) => {
       setUsers((prevUsers) =>
         prevUsers.filter((user) => user.id !== deletingUserId)
       );
-      alert("User deleted successfully");
+      toast.success("User deleted successfully");
     } catch (err: any) {
-      alert(`Failed to delete user: ${err.message}`);
+      toast.error(`Failed to delete user: ${err.message}`);
     } finally {
       setDeletingUserId(null);
     }
@@ -200,7 +185,6 @@ function User() {
 
   return (
     <>
-      {/* <NavigationBar /> */}
       <div className="flex justify-center py-4 mb-9">
         <button
           onClick={toggleRegisterForm}

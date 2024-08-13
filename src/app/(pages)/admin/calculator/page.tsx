@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useCallback, useState } from "react";
+import React, { FC, useCallback, useState, useEffect, useRef } from "react";
 import { FaRegTrashAlt, FaPlus } from "react-icons/fa";
 import { useSnapshot } from "valtio";
 import {
@@ -15,6 +15,7 @@ import {
 } from "@/store";
 import axios from 'axios';
 import CalculatorTable from "@/components/admin/ui/CalculatorTable";
+import { toast } from "react-toastify";
 
 type Value = {
   id: number;
@@ -27,44 +28,8 @@ type Value = {
   pricedOnApplication: boolean;
 };
 
-type Supplement = {
-  id: number;
-  quoteTypeId: number;
-  title: string;
-  cost: number;
-  free: boolean;
-  joinQuotes: boolean;
-  perIndividual: boolean;
-  variable: boolean;
-  pricedOnApplication: boolean;
-};
 
-type Disbursement = {
-  id: number;
-  quoteTypeId: number;
-  title: string;
-  cost: number;
-  free: boolean;
-  joinQuotes: boolean;
-  perIndividual: boolean;
-  variable: boolean;
-  pricedOnApplication: boolean;
-};
 
-type QuoteType = {
-  id: number;
-  calculatorId: number;
-  type: QuoteTypeEnum;
-  values: Value[];
-  supplements: Supplement[];
-  disbursements: Disbursement[];
-};
-
-type Calculator = {
-  id: number;
-  name: string;
-  quoteTypes: QuoteType[];
-};
 
 enum QuoteTypeEnum {
   SALE = "SALE",
@@ -91,26 +56,8 @@ interface TableRowProps {
   isFirstRow: boolean;
   isOnlyRow: boolean;
 }
-interface FieldData {
-  id: number;
-  data: {
-    name: string;
-    price: string;
-    free: boolean;
-    only_show_once_on_join_quotes: boolean;
-    per_individual: boolean;
-    variable: boolean;
-    price_on_application: boolean;
-  };
-}
-interface FeeTableRow {
-  start: string;
-  end: string;
-  legalFees: number;
-  percentageOfValue: boolean;
-  plusedFixedFee: boolean;
-  pricedOnApplication: boolean;
-}
+
+
 interface FieldProps {
   onRemove: () => void;
   onChange: (data: any) => void;
@@ -135,9 +82,62 @@ const CalculatorListPage: FC = () => {
     isOnlyRow,
   }: TableRowProps) {
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [localStart, setLocalStart] = useState(start);
+    const [localEnd, setLocalEnd] = useState(end);
+    const [localLegalFees, setLocalLegalFees] = useState(legalFees.toString());
 
-    const handleInputChange = useCallback(
-      (field: string, value: string | number | boolean) => {
+    const startTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const endTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const legalFeesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const handleInputChange = useCallback((field: string, value: string) => {
+      if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
+      
+      if (field === 'start') setLocalStart(value);
+      else if (field === 'end') setLocalEnd(value);
+      else if (field === 'legalFees') setLocalLegalFees(value);
+
+      blurTimeoutRef.current = setTimeout(() => {
+        (document.activeElement as HTMLElement)?.blur();
+      }, 15000);
+    }, []);
+
+    useEffect(() => {
+      if (startTimeoutRef.current) clearTimeout(startTimeoutRef.current);
+      startTimeoutRef.current = setTimeout(() => {
+        onInputChange(id, "propertyValueStart", localStart);
+      }, 500);
+
+      return () => {
+        if (startTimeoutRef.current) clearTimeout(startTimeoutRef.current);
+      };
+    }, [localStart, id, onInputChange]);
+
+    useEffect(() => {
+      if (endTimeoutRef.current) clearTimeout(endTimeoutRef.current);
+      endTimeoutRef.current = setTimeout(() => {
+        onInputChange(id, "propertyValueEnd", localEnd);
+      }, 500);
+
+      return () => {
+        if (endTimeoutRef.current) clearTimeout(endTimeoutRef.current);
+      };
+    }, [localEnd, id, onInputChange]);
+
+    useEffect(() => {
+      if (legalFeesTimeoutRef.current) clearTimeout(legalFeesTimeoutRef.current);
+      legalFeesTimeoutRef.current = setTimeout(() => {
+        onInputChange(id, "legalFees", parseFloat(localLegalFees));
+      }, 500);
+
+      return () => {
+        if (legalFeesTimeoutRef.current) clearTimeout(legalFeesTimeoutRef.current);
+      };
+    }, [localLegalFees, id, onInputChange]);
+
+    const handleCheckboxChange = useCallback(
+      (field: string, value: boolean) => {
         onInputChange(id, field, value);
       },
       [id, onInputChange]
@@ -149,14 +149,14 @@ const CalculatorListPage: FC = () => {
           <input
             type="number"
             placeholder="Start"
-            value={start}
-            onChange={(e) => handleInputChange("propertyValueStart", e.target.value)}
+            value={localStart}
+            onChange={(e) => handleInputChange('start', e.target.value)}
           />
           <input
             type="number"
             placeholder="End"
-            value={end}
-            onChange={(e) => handleInputChange("propertyValueEnd", e.target.value)}
+            value={localEnd}
+            onChange={(e) => handleInputChange('end', e.target.value)}
           />
         </div>
         <div className="valuesdata flex-1 flex items-center justify-between">
@@ -164,32 +164,24 @@ const CalculatorListPage: FC = () => {
             <label>£</label>
             <input
               type="number"
-              value={legalFees}
-              onChange={(e) =>
-                handleInputChange("legalFees", parseFloat(e.target.value))
-              }
+              value={localLegalFees}
+              onChange={(e) => handleInputChange('legalFees', e.target.value)}
             />
           </div>
           <input
             type="checkbox"
             checked={percentageOfValue}
-            onChange={(e) =>
-              handleInputChange("percentageOfValue", e.target.checked)
-            }
+            onChange={(e) => handleCheckboxChange("percentageOfValue", e.target.checked)}
           />
           <input
             type="checkbox"
             checked={plusedFixedFee}
-            onChange={(e) =>
-              handleInputChange("plusedFixedFee", e.target.checked)
-            }
+            onChange={(e) => handleCheckboxChange("plusedFixedFee", e.target.checked)}
           />
           <input
             type="checkbox"
             checked={pricedOnApplication}
-            onChange={(e) =>
-              handleInputChange("pricedOnApplication", e.target.checked)
-            }
+            onChange={(e) => handleCheckboxChange("pricedOnApplication", e.target.checked)}
           />
           <div className="flex gap-4">
             {isOnlyRow ? (
@@ -351,17 +343,25 @@ const CalculatorListPage: FC = () => {
     "Client is Other",
   ];
 
-  const checkboxValues = [
-    "Free",
-    "Only show once on Join quotes",
-    "Per individual",
-    "Variable",
-    "Price on Application",
-  ];
+
 
   const Field: React.FC<FieldProps> = React.memo(
     ({ onRemove, onChange, data }) => {
       const [showConfirmModal, setShowConfirmModal] = useState(false);
+      const [localData, setLocalData] = useState(data);
+      const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+      const checkboxValues = [
+        { label: "Free", name: "free" },
+        { label: "Only show once on Join quotes", name: "joinQuotes" },
+        { label: "Per individual", name: "perIndividual" },
+        { label: "Variable", name: "variable" },
+        { label: "Price on Application", name: "pricedOnApplication" }
+      ];
+
+      useEffect(() => {
+        setLocalData(data);
+      }, [data]);
 
       const handleInputChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -369,11 +369,38 @@ const CalculatorListPage: FC = () => {
           const newValue =
             type === "checkbox"
               ? (e.target as HTMLInputElement).checked
+              : type === "number"
+              ? value === '' ? '' : parseFloat(value)
               : value;
-          onChange({ ...data, [name]: newValue });
+
+
+          setLocalData((prevData:any) => {
+            const updatedData = { ...prevData, [name]: newValue };
+            return updatedData;
+          });
+
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
+
+          timeoutRef.current = setTimeout(() => {
+            setLocalData((currentData:any) => {
+              onChange(currentData);
+              return currentData;
+            });
+            (e.target as HTMLElement).blur();
+          }, 1500);
         },
-        [onChange, data]
+        [onChange]
       );
+
+      useEffect(() => {
+        return () => {
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
+        };
+      }, []);
 
       return (
         <div className="flex flex-col mt-6">
@@ -385,7 +412,7 @@ const CalculatorListPage: FC = () => {
                   id="type"
                   name="type"
                   className="px-3 py-2 text-xl text-gray-600 items-center flex bg-gray-300 rounded-md"
-                  value={data.type}
+                  value={localData.type || ''}
                   onChange={handleInputChange}
                 >
                   {selectedOptions.map((option) => (
@@ -396,26 +423,26 @@ const CalculatorListPage: FC = () => {
                 </select>
               </div>
               <div className="flex flex-col justify-between">
-                <label htmlFor="name">Name</label>
+                <label htmlFor="title">Name</label>
                 <input
                   type="text"
-                  id="name"
-                  name="name"
+                  id="title"
+                  name="title"
                   placeholder="Name"
                   className="text-left"
-                  value={data.name}
+                  value={localData.title || ''}
                   onChange={handleInputChange}
                 />
               </div>
               <div className="flex flex-col justify-between">
-                <label htmlFor="price">Price(£)</label>
+                <label htmlFor="cost">Price(£)</label>
                 <input
                   type="number"
-                  id="price"
-                  name="price"
+                  id="cost"
+                  name="cost"
                   placeholder="Price"
                   className="text-left"
-                  value={data.price}
+                  value={localData.cost ?? ''}
                   onChange={handleInputChange}
                 />
               </div>
@@ -425,16 +452,16 @@ const CalculatorListPage: FC = () => {
               <p className="font-bold text-xl">Options:</p>
               <div className="flex gap-8 flex-wrap">
                 {checkboxValues.map((item) => (
-                  <div key={item} className="flex gap-2 items-center">
+                  <div key={item.name} className="flex gap-2 items-center">
                     <input
                       type="checkbox"
-                      id={item}
-                      name={item.toLowerCase().replace(/ /g, "_")}
-                      checked={data[item.toLowerCase().replace(/ /g, "_")]}
+                      id={item.name}
+                      name={item.name}
+                      checked={localData[item.name] || false}
                       onChange={handleInputChange}
                     />
-                    <label htmlFor={item} className="text-gray-800 text-xl">
-                      {item}
+                    <label htmlFor={item.name} className="text-gray-800 text-xl">
+                      {item.label}
                     </label>
                   </div>
                 ))}
@@ -588,20 +615,20 @@ const CalculatorListPage: FC = () => {
     if (!isOpen) return null;
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="fixed inset-0  bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white p-6 rounded-lg shadow-xl">
-          <h3 className="text-xl font-bold mb-4">Confirm Deletion</h3>
-          <p className="mb-6">Are you sure you want to delete this field?</p>
-          <div className="flex justify-end gap-4">
+          <h3 className="text-4xl font-bold bg-red-300 mb-4">Confirm Deletion</h3>
+          <p className="mb-6 text-3xl">Are you sure you want to delete this field?</p>
+          <div className="flex justify-end  gap-4">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-gray-200 rounded-md"
+              className="px-4 text-3xl py-2 bg-gray-200 rounded-md"
             >
               Cancel
             </button>
             <button
               onClick={onConfirm}
-              className="px-4 py-2 bg-red-500 text-white rounded-md"
+              className="px-4 py-2 text-3xl bg-red-500 text-white rounded-md"
             >
               Delete
             </button>
@@ -706,7 +733,7 @@ const CalculatorListPage: FC = () => {
       quote_types: quoteTypes
     };
 
-    console.log(JSON.stringify(calculatorData, null, 2));
+    // console.log(JSON.stringify(calculatorData, null, 2));
 
     return calculatorData;
   };
@@ -714,12 +741,14 @@ const CalculatorListPage: FC = () => {
   const saveCalculator = async (calculatorData: any) => {
     try {
       const response = await axios.post('/api/test', calculatorData);
-      console.log('Calculator saved successfully:', response.data);
+      // console.log('Calculator saved successfully:', response.data);
+      toast.success("New Calculator saved successfully")
       setIsSaving(false);
       toggleAddingCalculator();
       // You might want to add some success notification here
     } catch (error) {
       console.error('Error saving calculator:', error);
+      toast.error("Error saving calculator")
       setIsSaving(false);
       // You might want to add some error notification here
     }

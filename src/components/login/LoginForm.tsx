@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Input from "./inputs";
 import axios from "axios";
-
+import { toast } from 'react-toastify';
 const LoginForm: React.FC = () => {
   const router = useRouter();
   const [user, setUser] = useState({
@@ -19,15 +19,13 @@ const LoginForm: React.FC = () => {
       const response = await axios.post("/api/auth/login", user);
       console.log("Login success", response.data);
 
-      const { isAdmin } = response.data;
+      const { isAdmin,name } = response.data;
       router.push(isAdmin ? "/admin" : "/client");
+      toast.success(`${name} Login success`);
 
-      // Uncomment the following line if you want to use toast notifications
-      // toast.success("Login success");
     } catch (error: any) {
       console.log("Login failed", error.message);
-      // Uncomment the following line if you want to use toast notifications
-      // toast.error(error.message);
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }

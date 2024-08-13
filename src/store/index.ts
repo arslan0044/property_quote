@@ -16,7 +16,7 @@ type Supplement = {
   id: number;
   quoteTypeId: number;
   title: string;
-  cost: number;
+  cost: number; // Changed to string
   free: boolean;
   joinQuotes: boolean;
   perIndividual: boolean;
@@ -28,7 +28,7 @@ type Disbursement = {
   id: number;
   quoteTypeId: number;
   title: string;
-  cost: number;
+  cost: number; // Changed to string
   free: boolean;
   joinQuotes: boolean;
   perIndividual: boolean;
@@ -59,15 +59,16 @@ enum QuoteTypeEnum {
 }
 
 const defaultQuoteType = {
-  feeTable: [{ id: Date.now(), quoteTypeId: 0, propertyValueStart: 0, propertyValueEnd: 100000, legalFees: 100, percentageOfValue: false, plusFixedFee: false, pricedOnApplication: false }],
-  supplements: [{ id: Date.now(), quoteTypeId: 0, title: "", cost: 0, free: false, joinQuotes: false, perIndividual: false, variable: false, pricedOnApplication: false }],
-  disbursements: [{ id: Date.now(), quoteTypeId: 0, title: "", cost: 0, free: false, joinQuotes: false, perIndividual: false, variable: false, pricedOnApplication: false }],
+  feeTable: [{ id: Date.now(), quoteTypeId: -1, propertyValueStart: 0, propertyValueEnd: 100000, legalFees: 100, percentageOfValue: false, plusFixedFee: false, pricedOnApplication: false }],
+  supplements: [],
+  disbursements: [],
 };
 
 // Create the Valtio store
 const store = proxy<{
   calculators: Calculator[];
   currentCalculator: {
+    id?: number;
     name: string;
     quoteTypes: Record<QuoteTypeEnum, {
       feeTable: Value[];
@@ -118,20 +119,56 @@ function updateDisbursements(type: QuoteTypeEnum, disbursements: Disbursement[])
 function toggleAddingCalculator() {
   store.isAddingCalculator = !store.isAddingCalculator;
   if (!store.isAddingCalculator) {
-    store.currentCalculator = {
-      name: '',
-      quoteTypes: {
-        [QuoteTypeEnum.SALE]: { ...defaultQuoteType },
-        [QuoteTypeEnum.PURCHASE]: { ...defaultQuoteType },
-        [QuoteTypeEnum.REMORTGAGE]: { ...defaultQuoteType },
-        [QuoteTypeEnum.TRANSFER_OF_EQUITY]: { ...defaultQuoteType },
-      },
-    };
+    resetCurrentCalculator();
   }
+}
+
+function resetCurrentCalculator() {
+  store.currentCalculator = {
+    name: '',
+    quoteTypes: {
+      [QuoteTypeEnum.SALE]: { ...defaultQuoteType },
+      [QuoteTypeEnum.PURCHASE]: { ...defaultQuoteType },
+      [QuoteTypeEnum.REMORTGAGE]: { ...defaultQuoteType },
+      [QuoteTypeEnum.TRANSFER_OF_EQUITY]: { ...defaultQuoteType },
+    },
+  };
 }
 
 function setIsSaving(isSaving: boolean) {
   store.isSaving = isSaving;
+}
+
+function updateCalculator(calculator: Calculator) {
+  store.currentCalculator = {
+    id: calculator.id,
+    name: calculator.name,
+    quoteTypes: Object.fromEntries(
+      calculator.quoteTypes.map(quoteType => [
+        quoteType.type,
+        {
+          feeTable: quoteType.values.map(value => ({
+            ...value,
+            propertyValueStart: Number(value.propertyValueStart),
+            propertyValueEnd: Number(value.propertyValueEnd),
+            legalFees: Number(value.legalFees),
+          })),
+          supplements: quoteType.supplements.map(supplement => ({
+            ...supplement,
+            cost: supplement.cost,
+          })),
+          disbursements: quoteType.disbursements.map(disbursement => ({
+            ...disbursement,
+            cost: disbursement.cost,
+          })),
+        }
+      ])
+    ) as Record<QuoteTypeEnum, {
+      feeTable: Value[];
+      supplements: Supplement[];
+      disbursements: Disbursement[];
+    }>,
+  };
 }
 
 export { 
@@ -143,5 +180,6 @@ export {
   updateSupplements, 
   updateDisbursements,
   toggleAddingCalculator,
-  setIsSaving
+  setIsSaving,
+  updateCalculator
 };

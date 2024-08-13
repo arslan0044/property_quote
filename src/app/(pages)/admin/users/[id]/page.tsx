@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Image from "next/image";
+import { toast } from "react-toastify";
 
 interface User {
   id: number;
@@ -35,11 +36,12 @@ const EditUserForm = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`/api/user/${params.id}`)
+      .get(`/api/user/${params.id}/`)
       .then((response) => {
         const userData = response.data.user;
         setInitialUser(userData);
         setUpdatedUser(userData);
+        toast.success(`${userData.name} is Update Sucessfully`)
       })
       .catch((error) => {
         console.error("There was an error fetching the user data!", error);
@@ -63,10 +65,10 @@ const EditUserForm = ({ params }: { params: { id: string } }) => {
     e.preventDefault();
     setLoading(true);
     axios
-      .put(`/api/user/${params.id}`, { user: updatedUser })
+      .put(`/api/user/${params.id}`,   updatedUser )
       .then((response) => {
         console.log("User updated successfully!", response.data);
-        setInitialUser(updatedUser); // Update the initial data to reflect the changes
+        setInitialUser(updatedUser); 
       })
       .catch((error) => {
         console.error("There was an error updating the user!", error);
@@ -91,7 +93,7 @@ const EditUserForm = ({ params }: { params: { id: string } }) => {
   return (
     <div className="flex flex-col items-center justify-center py-2 gap-8">
       <h1 className="text-left text-5xl py-4 font-bold text-gray-700">
-        {loading ? "Processing" : `${updatedUser.id ? 'Update' : 'Register'} User`}
+        {loading ? "Processing" : `Update  User`}
       </h1>
       <form
         onSubmit={handleSubmit}
@@ -142,7 +144,7 @@ const EditUserForm = ({ params }: { params: { id: string } }) => {
           className="p-2 rounded-lg shadow-lg bg-black text-white text-xl font-bold py-3 hover:bg-gray-900 disabled:opacity-50"
           disabled={loading}
         >
-          {loading ? "Processing..." : `${updatedUser.id ? 'Update' : 'Register'} User`}
+          {loading ? "Processing..." : `Update User`}
         </button>
       </form>
     </div>
