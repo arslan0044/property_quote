@@ -68,8 +68,8 @@ const CalculatorTable: React.FC = () => {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mt-5 secondary-background p-4 rounded-md ">
+    <div className="mx-auto max-w-[70%]">
+      {/* <div className="flex justify-between items-center mt-5 secondary-background p-4 rounded-md ">
         <div className="flex items-center gap-7">
           <p className="flex text-2xl font-bold text-white gap-3 items-center">
             <BiHome /> {homeString}
@@ -85,9 +85,9 @@ const CalculatorTable: React.FC = () => {
             <BiHelpCircle className="text-3xl" /> Help
           </button>
         </div>
-      </div>
-      <table className="table-data w-full mt-8 shadow-md">
-        <thead>
+      </div> */}
+      <table className=" w-full mt-8 shadow-md">
+        <thead className="secondary-background text-white">
           <tr>
             {["Id", "Name", "Options"].map((header) => (
               <th key={header} className="text-2xl p-2 capitalize">
@@ -97,13 +97,15 @@ const CalculatorTable: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {tableData.map((item) => (
-            <tr key={item.id}>
-              <td className="text-xl p-2 capitalize text-center">{item.id}</td>
-              <td className="text-xl p-2 capitalize text-center">
+          {tableData.map((item, index) => (
+            <tr key={item.id} className="border-b border-gray-300">
+              <td className="text-2xl p-2 capitalize text-center font-bold text-gray-600 py-4">
+                {item.id}
+              </td>
+              <td className="text-2xl p-2 capitalize text-center font-bold text-gray-600 py-4">
                 {item.name}
               </td>
-              <td className="text-xl p-2 capitalize text-center">
+              <td className="text-2xl p-2 capitalize text-center font-bold text-gray-600 py-4">
                 <ButtonOptions />
               </td>
             </tr>

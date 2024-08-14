@@ -2,11 +2,12 @@
 import CalculatorTable from "@/components/admin/ui/CalculatorTable";
 import Link from "next/link";
 import React from "react";
+import Dashboard from "./calculator/Dashborad";
 
 function AdminPage() {
   return (
-    <div className="grid h-screen w-full place-items-center">
-      <h1 className="h-full flex items-center gap-8">
+    <div className="">
+      <h1 className="h-full flex items-center gap-8 justify-center my-8">
         <Link className="client-link button-primary" href="/admin/calculator">
           Calculators
         </Link>
@@ -14,7 +15,8 @@ function AdminPage() {
           Users
         </Link>
       </h1>
-      <CalculatorTable/>
+      <CalculatorTable />
+      <Dashboard />
     </div>
   );
 }

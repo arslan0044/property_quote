@@ -81,18 +81,24 @@ function RegisterForm({ onRegister, user: initialUser, onClose, onUpdate }: Regi
   return (
     <div className="flex flex-col items-center justify-center py-2 gap-8">
       <h1 className="text-left text-5xl py-4 font-bold text-gray-700">
-        {loading ? "Processing" : `${user.id ? 'Update' : 'Register'} User`}
+        {loading ? "Processing" : `${user.id ? "Update" : "Register"} User`}
       </h1>
-      <form onSubmit={onSubmit} className="flex flex-col gap-6 w-[400px] py-6 px-8 rounded-xl">
-        {['name', 'username', 'email', 'password'].map(field => (
+      <form
+        onSubmit={onSubmit}
+        className="flex flex-col gap-6 w-[400px] py-6 px-8 rounded-xl -z-10"
+      >
+        {["name", "username", "email", "password"].map((field) => (
           <div key={field} className="flex flex-col gap-2">
-            <label htmlFor={field} className="text-gray-600 font-medium text-2xl">
+            <label
+              htmlFor={field}
+              className="text-gray-600 font-medium text-2xl"
+            >
               {field.charAt(0).toUpperCase() + field.slice(1)}
             </label>
             <input
               id={field}
               name={field}
-              type={field === 'password' ? 'password' : 'text'}
+              type={field === "password" ? "password" : "text"}
               value={user[field as keyof User] as string}
               onChange={handleChange}
               required
@@ -108,7 +114,10 @@ function RegisterForm({ onRegister, user: initialUser, onClose, onUpdate }: Regi
             checked={user.isAdmin}
             onChange={handleChange}
           />
-          <label htmlFor="isAdmin" className="text-gray-600 font-medium text-2xl">
+          <label
+            htmlFor="isAdmin"
+            className="text-gray-600 font-medium text-2xl"
+          >
             Admin
           </label>
         </div>
@@ -117,7 +126,9 @@ function RegisterForm({ onRegister, user: initialUser, onClose, onUpdate }: Regi
           className="p-2 rounded-lg shadow-lg bg-black text-white text-xl font-bold py-3 hover:bg-gray-900 disabled:opacity-50"
           disabled={loading}
         >
-          {loading ? "Processing..." : `${user.id ? 'Update' : 'Register'} User`}
+          {loading
+            ? "Processing..."
+            : `${user.id ? "Update" : "Register"} User`}
         </button>
       </form>
     </div>

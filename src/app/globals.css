@@ -335,8 +335,17 @@ ul li a {
   background-clip: padding-box, border-box;
   background-origin: padding-box, border-box;
   /* box-shadow: 0 0 13px 0px rgba(0, 0, 0, 0.267); */
-  @apply flex  mt-0 w-full h-32 sticky top-0 !important;
-  
+  @apply flex  mt-0 w-full h-32 sticky top-0 !important;  
+
+}
+
+.dashboard{
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg-color), var(--bg-color)),
+    var(--primary-gradient);
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  box-shadow: 0 0 13px 0px rgba(0, 0, 0, 0.267);
 
 }
 

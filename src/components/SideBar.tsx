@@ -31,19 +31,15 @@ const SideBar: React.FC<SidebarProps> = ({ isOpen, isAdmin, handleLogout }) => {
     
 
   return (
-    <div
-      
-      >
-     
+    <div>
       <div
         className={`fixed top-32 left-0 h-full transition-transform duration-700 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } w-[28rem] sidebar shadow-lg`}
       >
-       
         <div className="flex flex-col items-center gap-6 p-4 mt-12">
           <Image
-            src={ isAdmin ? "/assets/admin.webp" : "/assets/clientAvatar.webp"}
+            src={isAdmin ? "/assets/admin.webp" : "/assets/clientAvatar.webp"}
             width={200}
             height={200}
             className="rounded-full  border border-gray-400"
@@ -56,15 +52,18 @@ const SideBar: React.FC<SidebarProps> = ({ isOpen, isAdmin, handleLogout }) => {
                 className="w-full flex items-center hover:bg-slate-100"
               >
                 <Link
-                  href={isAdmin ? item.link : "/client"} 
+                  href={isAdmin ? item.link : "/client"}
                   className="block text-2xl font-bold text-center my-2 bg-gray-200 w-full py-2"
                 >
-                  {item.name} 
+                  {item.name}
                 </Link>
               </li>
             ))}
           </ul>
-          <button  onClick={handleLogout} className="bg-black text-2xl py-2 px-4 w-full text-white hover:bg-gray-800 font-bold shadow-lg rounded-lg">
+          <button
+            onClick={handleLogout}
+            className="bg-black text-2xl py-2 px-4 w-full text-white hover:bg-gray-800 font-bold shadow-lg rounded-lg"
+          >
             Logout
           </button>
         </div>

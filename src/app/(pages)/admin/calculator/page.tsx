@@ -755,14 +755,16 @@ const CalculatorListPage: FC = () => {
   };
 
   return (
-    <div className="">
+    <div>
       {!snap.isAddingCalculator ? (
-        <button
-          className="client-link button-primary "
-          onClick={toggleAddingCalculator}
-        >
-          Add New Calculator
-        </button>
+        <div className="flex justify-center py-5">
+          <button
+            className="client-link button-primary mx-auto "
+            onClick={toggleAddingCalculator}
+          >
+            Add New Calculator
+          </button>
+        </div>
       ) : (
         <div className="mt-6">
           <input
@@ -792,8 +794,8 @@ const CalculatorListPage: FC = () => {
         </div>
       )}
       {!snap.isAddingCalculator && (
-        <div className="w-full flex items-center justify-center">
-          <CalculatorTable /> 
+        <div>
+          <CalculatorTable />
         </div>
       )}
     </div>
