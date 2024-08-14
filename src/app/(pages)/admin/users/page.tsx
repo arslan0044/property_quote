@@ -197,9 +197,9 @@ function User() {
           {showRegisterForm ? "Hide Register Form" : " Register New User"}
         </button>
       </div>
-      {showRegisterForm && <RegisterForm onRegister={handleNewUser} />}
+      
+      {showRegisterForm ? <RegisterForm onRegister={handleNewUser} /> : <UserList users={users} setUsers={setUsers} />}
 
-      <UserList users={users} setUsers={setUsers} />
     </>
   );
 }
