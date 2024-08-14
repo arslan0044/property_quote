@@ -41,7 +41,7 @@ const ConfirmDialog: React.FC<{
             Cancel
           </button>
           <button
-            className="px-4 py-2 text-3xl bg-red-500 text-white rounded"
+            className="px-4 py-2 text-3xl  text-white rounded"
             onClick={() => {
               onConfirm();
               onClose();

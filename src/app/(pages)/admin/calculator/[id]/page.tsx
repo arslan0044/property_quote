@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useCallback, useState, useEffect, useRef } from "react";
+import React, { FC, useCallback, useState, useEffect, useRef, useMemo } from "react";
 import { FaRegTrashAlt, FaPlus } from "react-icons/fa";
 import { useSnapshot } from "valtio";
 import {
@@ -104,57 +104,20 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
     const [localEnd, setLocalEnd] = useState(end);
     const [localLegalFees, setLocalLegalFees] = useState(legalFees.toString());
 
-    const startTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const endTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const legalFeesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleInputChange = useCallback((field: string, value: string) => {
-      if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
+      if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current);
 
       if (field === "start") setLocalStart(value);
       else if (field === "end") setLocalEnd(value);
       else if (field === "legalFees") setLocalLegalFees(value);
 
-      blurTimeoutRef.current = setTimeout(() => {
+      updateTimeoutRef.current = setTimeout(() => {
+        onInputChange(id, field, field === "legalFees" ? parseFloat(value) : parseInt(value, 10));
         (document.activeElement as HTMLElement)?.blur();
-      }, 15000);
-    }, []);
-
-    useEffect(() => {
-      if (startTimeoutRef.current) clearTimeout(startTimeoutRef.current);
-      startTimeoutRef.current = setTimeout(() => {
-        onInputChange(id, "propertyValueStart", localStart);
-      }, 500);
-
-      return () => {
-        if (startTimeoutRef.current) clearTimeout(startTimeoutRef.current);
-      };
-    }, [localStart, id, onInputChange]);
-
-    useEffect(() => {
-      if (endTimeoutRef.current) clearTimeout(endTimeoutRef.current);
-      endTimeoutRef.current = setTimeout(() => {
-        onInputChange(id, "propertyValueEnd", localEnd);
-      }, 500);
-
-      return () => {
-        if (endTimeoutRef.current) clearTimeout(endTimeoutRef.current);
-      };
-    }, [localEnd, id, onInputChange]);
-
-    useEffect(() => {
-      if (legalFeesTimeoutRef.current)
-        clearTimeout(legalFeesTimeoutRef.current);
-      legalFeesTimeoutRef.current = setTimeout(() => {
-        onInputChange(id, "legalFees", parseFloat(localLegalFees));
-      }, 500);
-
-      return () => {
-        if (legalFeesTimeoutRef.current)
-          clearTimeout(legalFeesTimeoutRef.current);
-      };
-    }, [localLegalFees, id, onInputChange]);
+      }, 1500);
+    }, [id, onInputChange]);
 
     const handleCheckboxChange = useCallback(
       (field: string, value: boolean) => {
@@ -163,51 +126,59 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
       [id, onInputChange]
     );
 
+    useEffect(() => {
+      return () => {
+        if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current);
+      };
+    }, []);
+
+    const memoizedInputs = useMemo(() => (
+      <div className="inputs flex-1">
+        <input
+          type="number"
+          placeholder="Start"
+          value={localStart}
+          onChange={(e) => handleInputChange("start", e.target.value)}
+        />
+        <input
+          type="number"
+          placeholder="End"
+          value={localEnd}
+          onChange={(e) => handleInputChange("end", e.target.value)}
+        />
+      </div>
+    ), [localStart, localEnd, handleInputChange]);
+
+    const memoizedLegalFees = useMemo(() => (
+      <div className="flex items-center">
+        <label>£</label>
+        <input
+          type="number"
+          value={localLegalFees}
+          onChange={(e) => handleInputChange("legalFees", e.target.value)}
+        />
+      </div>
+    ), [localLegalFees, handleInputChange]);
+
     return (
       <div className="datatable my-6 flex items-center">
-        <div className="inputs flex-1">
-          <input
-            type="number"
-            placeholder="Start"
-            value={localStart}
-            onChange={(e) => handleInputChange("start", e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="End"
-            value={localEnd}
-            onChange={(e) => handleInputChange("end", e.target.value)}
-          />
-        </div>
+        {memoizedInputs}
         <div className="valuesdata flex-1 flex items-center justify-between">
-          <div className="flex items-center">
-            <label>£</label>
-            <input
-              type="number"
-              value={localLegalFees}
-              onChange={(e) => handleInputChange("legalFees", e.target.value)}
-            />
-          </div>
+          {memoizedLegalFees}
           <input
             type="checkbox"
             checked={percentageOfValue}
-            onChange={(e) =>
-              handleCheckboxChange("percentageOfValue", e.target.checked)
-            }
+            onChange={(e) => handleCheckboxChange("percentageOfValue", e.target.checked)}
           />
           <input
             type="checkbox"
             checked={plusedFixedFee}
-            onChange={(e) =>
-              handleCheckboxChange("plusedFixedFee", e.target.checked)
-            }
+            onChange={(e) => handleCheckboxChange("plusedFixedFee", e.target.checked)}
           />
           <input
             type="checkbox"
             checked={pricedOnApplication}
-            onChange={(e) =>
-              handleCheckboxChange("pricedOnApplication", e.target.checked)
-            }
+            onChange={(e) => handleCheckboxChange("pricedOnApplication", e.target.checked)}
           />
           <div className="flex gap-4">
             {isOnlyRow ? (
@@ -380,15 +351,15 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
     ({ onRemove, onChange, data }) => {
       const [showConfirmModal, setShowConfirmModal] = useState(false);
       const [localData, setLocalData] = useState(data);
-      const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+      const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-      const checkboxValues = [
+      const checkboxValues = useMemo(() => [
         { label: "Free", name: "free" },
         { label: "Only show once on Join quotes", name: "joinQuotes" },
         { label: "Per individual", name: "perIndividual" },
         { label: "Variable", name: "variable" },
         { label: "Price on Application", name: "pricedOnApplication" },
-      ];
+      ], []);
 
       useEffect(() => {
         setLocalData(data);
@@ -406,17 +377,16 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
                 : parseFloat(value)
               : value;
 
-
           setLocalData((prevData: any) => {
             const updatedData = { ...prevData, [name]: newValue };
             return updatedData;
           });
 
-          if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
+          if (updateTimeoutRef.current) {
+            clearTimeout(updateTimeoutRef.current);
           }
 
-          timeoutRef.current = setTimeout(() => {
+          updateTimeoutRef.current = setTimeout(() => {
             setLocalData((currentData: any) => {
               onChange(currentData);
               return currentData;
@@ -429,8 +399,8 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
 
       useEffect(() => {
         return () => {
-          if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
+          if (updateTimeoutRef.current) {
+            clearTimeout(updateTimeoutRef.current);
           }
         };
       }, []);
@@ -653,7 +623,7 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
     return (
       <div className="fixed inset-0  bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white p-6 rounded-lg shadow-xl">
-          <h3 className="text-4xl font-bold bg-red-300 mb-4">
+          <h3 className="text-4xl font-bold  mb-4">
             Confirm Deletion
           </h3>
           <p className="mb-6 text-3xl">
@@ -668,7 +638,7 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
             </button>
             <button
               onClick={onConfirm}
-              className="px-4 py-2 text-3xl bg-red-500 text-white rounded-md"
+              className="px-4 py-2 text-3xl bg-red-300 text-white rounded-md"
             >
               Delete
             </button>
@@ -794,7 +764,7 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
       setTimeout(() => {
         // Force refresh the page
         router.refresh();
-      }, 5000);
+      }, 15000);
       
 
       setIsSaving(false);

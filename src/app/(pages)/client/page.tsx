@@ -102,7 +102,7 @@ const ClientPage: FC = () => {
           </div>
 
           {/* Render the component based on the active button */}
-          {ActiveComponent && <ActiveComponent type={activeButtonType} />}
+          {ActiveComponent && <ActiveComponent type={activeButtonType!} />}
         </div>
       )}
     </>

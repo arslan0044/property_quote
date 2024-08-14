@@ -100,7 +100,7 @@ const CalculatorListPage: FC = () => {
 
       blurTimeoutRef.current = setTimeout(() => {
         (document.activeElement as HTMLElement)?.blur();
-      }, 15000);
+      }, 1500);
     }, []);
 
     useEffect(() => {
@@ -460,7 +460,7 @@ const CalculatorListPage: FC = () => {
                       checked={localData[item.name] || false}
                       onChange={handleInputChange}
                     />
-                    <label htmlFor={item.name} className="text-gray-800 text-xl">
+                    <label className="text-gray-800 text-xl">
                       {item.label}
                     </label>
                   </div>
@@ -617,7 +617,7 @@ const CalculatorListPage: FC = () => {
     return (
       <div className="fixed inset-0  bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white p-6 rounded-lg shadow-xl">
-          <h3 className="text-4xl font-bold bg-red-300 mb-4">Confirm Deletion</h3>
+          <h3 className="text-4xl font-bold mb-4">Confirm Deletion</h3>
           <p className="mb-6 text-3xl">Are you sure you want to delete this field?</p>
           <div className="flex justify-end  gap-4">
             <button
@@ -767,6 +767,7 @@ const CalculatorListPage: FC = () => {
         </div>
       ) : (
         <div className="mt-6">
+          <div className=" flex flex-row justify-around">
           <input
             type="text"
             id="calculatorname"
@@ -777,8 +778,12 @@ const CalculatorListPage: FC = () => {
             className="text-left"
             required
           />
+          <button className="admin-link button-primary" onClick={toggleAddingCalculator}>
+        Show Table
+          </button>
+          </div>
           <BaseCalculator />
-          <div className="fixed bottom-0 left-0 right-0 shadow-md p-4 flex justify-end">
+          <div className="fixed bottom-0 backdrop-blur-[2px] left-0 right-0 shadow-md p-4 flex justify-end">
             <button
               className="admin-link secondary-button"
               disabled={snap.isSaving}

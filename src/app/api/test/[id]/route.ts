@@ -51,10 +51,8 @@ export async function PUT(
 ) {
   try {
     const data = await request.json();
-    console.log("Received data:", data);
 
     if (!data.name || !Array.isArray(data.quote_types)) {
-      console.log("Invalid input data");
       return NextResponse.json(
         { error: "Invalid input data" },
         { status: 400 }
@@ -62,7 +60,6 @@ export async function PUT(
     }
 
     const calculatorId = parseId(params.id);
-    console.log("Calculator ID:", calculatorId);
 
     // Step 1: Delete existing related records
     await prisma.$transaction([
@@ -72,7 +69,6 @@ export async function PUT(
       prisma.quoteType.deleteMany({ where: { calculatorId } }),
     ]);
 
-    console.log("Deleted existing related records");
 
     // Step 2: Update calculator
     const updatedCalc = await prisma.calculator.update({
@@ -80,11 +76,9 @@ export async function PUT(
       data: { name: data.name },
     });
 
-    console.log("Updated calculator:", updatedCalc);
 
     // Step 3: Create new quote types and related records
     for (const quoteType of data.quote_types) {
-      console.log("Creating new quote type:", quoteType.type);
       
       const newQuoteType = await prisma.quoteType.create({
         data: {
@@ -93,7 +87,6 @@ export async function PUT(
         },
       });
 
-      console.log("Created new quote type:", newQuoteType.id);
 
       if (quoteType.values && quoteType.values.length > 0) {
         await prisma.value.createMany({
@@ -123,7 +116,6 @@ export async function PUT(
       }
     }
 
-    console.log("All quote types and related records created");
 
     // Step 4: Fetch and return the updated calculator with all related data
     const updatedCalculator = await prisma.calculator.findUnique({
@@ -139,8 +131,6 @@ export async function PUT(
       },
     });
 
-    console.log("Operation completed successfully");
-    console.log("Full updated calculator:", updatedCalculator);
 
     return NextResponse.json(updatedCalculator);
   } catch (error) {

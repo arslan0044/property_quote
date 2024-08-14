@@ -119,7 +119,7 @@ function updateDisbursements(type: QuoteTypeEnum, disbursements: Disbursement[])
 function toggleAddingCalculator() {
   store.isAddingCalculator = !store.isAddingCalculator;
   if (!store.isAddingCalculator) {
-    resetCurrentCalculator();
+    // resetCurrentCalculator();
   }
 }
 
