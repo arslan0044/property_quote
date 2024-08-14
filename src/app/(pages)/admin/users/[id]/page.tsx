@@ -67,11 +67,12 @@ const EditUserForm = ({ params }: { params: { id: string } }) => {
     axios
       .put(`/api/user/${params.id}`,   updatedUser )
       .then((response) => {
-        console.log("User updated successfully!", response.data);
+        toast.success(`${response.data.user.name} is updated successfully! `)
         setInitialUser(updatedUser); 
       })
       .catch((error) => {
         console.error("There was an error updating the user!", error);
+        toast.error("Error to update User")
       })
       .finally(() => {
         setLoading(false);

@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     const reqBody = await request.json();
-    const { name, username, email, password } = reqBody;
+    const { name, username, email, password, isAdmin} = reqBody;
     console.log(reqBody);
 
     // Check if email or username already exists
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
         username,
         email,
         password: hashedPassword,
-        isAdmin: false, // Set isAdmin to false by default
+        isAdmin: isAdmin, 
       },
     });
 

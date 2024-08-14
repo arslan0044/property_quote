@@ -19,7 +19,7 @@ interface RegisterFormProps {
 }
 
 const initialUserState: User = {
-  id: '',
+  id: "",
   name: "",
   email: "",
   username: "",
@@ -27,7 +27,12 @@ const initialUserState: User = {
   password: "",
 };
 
-function RegisterForm({ onRegister, user: initialUser, onClose, onUpdate }: RegisterFormProps) {
+function RegisterForm({
+  onRegister,
+  user: initialUser,
+  onClose,
+  onUpdate,
+}: RegisterFormProps) {
   const [user, setUser] = useState<User>(initialUser ?? initialUserState);
   const [loading, setLoading] = useState(false);
 
@@ -37,9 +42,9 @@ function RegisterForm({ onRegister, user: initialUser, onClose, onUpdate }: Regi
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setUser(prevUser => ({
+    setUser((prevUser) => ({
       ...prevUser,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -64,11 +69,14 @@ function RegisterForm({ onRegister, user: initialUser, onClose, onUpdate }: Regi
     if (!validateForm()) return;
     setLoading(true);
     try {
-      const response = await axios[user.id ? 'put' : 'post'](
+      const response = await axios[user.id ? "put" : "post"](
         user.id ? `/api/user/${user.id}` : "/api/user/register",
         user
       );
-      toast.success(`${user.name} ${user.id ? 'updated' : 'registered'} successfully`);
+
+      toast.success(
+        `${user.name} ${user.id ? "updated" : "registered"} successfully`
+      );
       (user.id ? onUpdate : onRegister)?.(response.data.user || response.data);
       onClose?.();
     } catch (error: any) {
@@ -85,7 +93,7 @@ function RegisterForm({ onRegister, user: initialUser, onClose, onUpdate }: Regi
       </h1>
       <form
         onSubmit={onSubmit}
-        className="flex flex-col gap-6 w-[400px] py-6 px-8 rounded-xl -z-10"
+        className="flex flex-col gap-6 w-[400px] py-6 px-8 rounded-xl"
       >
         {["name", "username", "email", "password"].map((field) => (
           <div key={field} className="flex flex-col gap-2">
