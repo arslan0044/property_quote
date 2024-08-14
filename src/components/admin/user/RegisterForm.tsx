@@ -87,8 +87,8 @@ function RegisterForm({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-2 gap-8">
-      <h1 className="text-left text-5xl py-4 font-bold text-gray-700">
+    <div className="flex flex-col items-center justify-center py-2 gap-8 ">
+      <h1 className="text-left text-5xl py-4 font-bold text-gray-700 ">
         {loading ? "Processing" : `${user.id ? "Update" : "Register"} User`}
       </h1>
       <form
