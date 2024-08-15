@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
       quoteTypeId,
       title,
       cost,
+      type,
       free,
       joinQuotes,
       perIndividual,
@@ -25,14 +26,15 @@ export async function POST(request: NextRequest) {
     
     const newSupplement = await prisma.supplement.create({
       data: {
-        quoteTypeId,
-        title,
-        cost,
-        free,
-        joinQuotes,
-        perIndividual,
-        variable,
-        pricedOnApplication
+        quoteTypeId: quoteTypeId,
+        title: title,
+        cost: cost,
+        free: free,
+        type:type,
+        joinQuotes: joinQuotes,
+        perIndividual: perIndividual,
+        variable: variable,
+        pricedOnApplication: pricedOnApplication,
       },
     });
     return NextResponse.json(newSupplement, { status: 201 });
