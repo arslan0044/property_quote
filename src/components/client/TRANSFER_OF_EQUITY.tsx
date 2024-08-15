@@ -3,7 +3,6 @@ import React from "react";
 import { BiSearch } from "react-icons/bi";
 
 function TRANSFER_OF_EQUITY() {
-
   return (
     <>
       <div className="w-4/5 lg:w-2/4 mx-auto my-14">
@@ -62,7 +61,7 @@ function TRANSFER_OF_EQUITY() {
               </p>
               <select className="px-3 py-2 text-xl text-gray-600 items-center flex bg-gray-300 rounded-md w-[50%]">
                 <option>Whole</option>
-                <option>Part</option>         
+                <option>Part</option>
               </select>
             </div>
             <div className="flex justify-between w-full items-center">
@@ -91,13 +90,16 @@ function TRANSFER_OF_EQUITY() {
                   Page being added
                 </p>
                 <select className=" py-2 px-3 text-xl text-gray-600 items-center flex bg-gray-300 rounded-md">
-                  <option>Same as Corospondence address</option>
-                  <option>Same as Corospondence address</option>
-                  <option>Same as Corospondence address</option>
-                  <option>Same as Corospondence address</option>
-                  <option>Same as Corospondence address</option>
-                  <option>Same as Corospondence address</option>
-                  <option>Same as Corospondence address</option>
+                  <option value="">1</option>
+                  <option value="">2</option>
+                  <option value="">3</option>
+                  <option value="">4</option>
+                  <option value="">5</option>
+                  <option value="">6</option>
+                  <option value="">7</option>
+                  <option value="">8</option>
+                  <option value="">9</option>
+                  <option value="">10</option>
                 </select>
               </div>
               <div className="flex flex-col items-center">
@@ -105,13 +107,16 @@ function TRANSFER_OF_EQUITY() {
                   Page being Removed
                 </p>
                 <select className=" py-2 px-3 text-xl text-gray-600 items-center flex bg-gray-300 rounded-md">
-                  <option>Same as Corospondence address</option>
-                  <option>Same as Corospondence address</option>
-                  <option>Same as Corospondence address</option>
-                  <option>Same as Corospondence address</option>
-                  <option>Same as Corospondence address</option>
-                  <option>Same as Corospondence address</option>
-                  <option>Same as Corospondence address</option>
+                  <option value="">1</option>
+                  <option value="">2</option>
+                  <option value="">3</option>
+                  <option value="">4</option>
+                  <option value="">5</option>
+                  <option value="">6</option>
+                  <option value="">7</option>
+                  <option value="">8</option>
+                  <option value="">9</option>
+                  <option value="">10</option>
                 </select>
               </div>
             </div>
@@ -128,7 +133,7 @@ function TRANSFER_OF_EQUITY() {
             <div className="flex gap-4 w-[50%]">
               <input type="checkbox" name="" id="" />
               <p className="font-medium text-gray-600 text-xl">
-                Sharped Ownership
+                Shared Ownership
               </p>
             </div>
           </div>

@@ -120,7 +120,7 @@ function RemogtageClient() {
             <div className="flex gap-4 w-[50%]">
               <input type="checkbox" name="" id="" />
               <p className="font-medium text-gray-600 text-xl">
-                Sharped Ownership
+                Shared Ownership
               </p>
             </div>
           </div>
