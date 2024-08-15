@@ -48,7 +48,8 @@ model Token {
 model Calculator {
   id            Int             @id @default(autoincrement())
   name          String
-  url           String
+  jsonurl       String
+  htmlurl       String
   quoteTypes    QuoteType[]
 }
 
@@ -79,6 +80,7 @@ model Supplement {
   quoteType            QuoteType    @relation(fields: [quoteTypeId], references: [id])
   quoteTypeId          Int
   title                String
+  type                 String
   cost                 Decimal
   free                 Boolean
   joinQuotes           Boolean
@@ -92,6 +94,7 @@ model Disbursement {
   quoteType            QuoteType    @relation(fields: [quoteTypeId], references: [id])
   quoteTypeId          Int
   title                String
+  type                 String
   cost                 Decimal
   free                 Boolean
   joinQuotes           Boolean

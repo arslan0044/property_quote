@@ -5,7 +5,7 @@ import BuyingClientComp from "./Buying";
 function SaleAndPurchase() {
   return (
     <div>
-      <div className="flex px-3 gap-8">
+      <div className="flex px-3 lg:gap-8 flex-col lg:flex-row">
         <SalesClientComp />
         <BuyingClientComp />
       </div>

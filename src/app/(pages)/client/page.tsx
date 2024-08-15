@@ -1,10 +1,11 @@
 "use client";
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
+import axios from "axios";
 import SalesClientComp from "@/components/client/Sale";
 import BuyingClientComp from "@/components/client/Buying";
 import SaleAndPurchase from "@/components/client/SaleAndPurchase";
-import QuoteTypeDetails from "@/components/client/clientPage";
-import RemogtageClient from "@/components/client/Remogtage"; 
+import TRANSFER_OF_EQUITY from "@/components/client/TRANSFER_OF_EQUITY";
+import RemogtageClient from "@/components/client/Remogtage";
 
 enum QuoteTypeEnum {
   SALE = "SALE",
@@ -25,7 +26,7 @@ const ComponentMap: Record<QuoteTypeEnum, FC<{ type: QuoteTypeEnum }>> = {
   [QuoteTypeEnum.PURCHASE]: BuyingClientComp,
   [QuoteTypeEnum.REMORTGAGE]: RemogtageClient,
   [QuoteTypeEnum.SALEANDPURCHASE]: SaleAndPurchase,
-  [QuoteTypeEnum.TRANSFER_OF_EQUITY]: QuoteTypeDetails,
+  [QuoteTypeEnum.TRANSFER_OF_EQUITY]: TRANSFER_OF_EQUITY,
 };
 
 // Updated buttons array with correct label and type
@@ -52,16 +53,37 @@ const buttons: Button[] = [
   },
 ];
 
+interface Calculator {
+  id: number;
+  name: string;
+}
+
 const ClientPage: FC = () => {
   const [activeButtonType, setActiveButtonType] =
     useState<QuoteTypeEnum | null>(null);
   const [show, setShow] = useState(false);
+  const [calculators, setCalculators] = useState<Calculator[]>([]);
+  const [selectedCalculator, setSelectedCalculator] = useState<string>("");
+
+  useEffect(() => {
+    const fetchCalculators = async () => {
+      try {
+        const response = await axios.get("/api/calculators");
+        setCalculators(response.data);
+      } catch (error) {
+        console.error("Error fetching calculators:", error);
+      }
+    };
+
+    fetchCalculators();
+  }, []);
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value;
-    if (selectedValue === "showOptions") {
+    setSelectedCalculator(selectedValue);
+    if (selectedValue !== "") {
       setShow(true);
-    }
+    } 
   };
 
   const handleClick = (type: QuoteTypeEnum) => {
@@ -79,13 +101,16 @@ const ClientPage: FC = () => {
         className="px-3 py-2 text-2xl text-gray-600 items-center flex bg-gray-300 rounded-md w-[25%] font-bold"
         onChange={handleSelectChange}
       >
-        <option value="">Select an option</option>
-        <option value="showOptions">Show Options</option>
-        <option value="hideOptions">Hide Options</option>
+       {selectedCalculator === "" && <option value="">Select an option</option>}
+        {calculators.map((calculator) => (
+          <option key={calculator.id} value={calculator.name}>
+            {calculator.name}
+          </option>
+        ))}
       </select>
       {show && (
         <div className="main">
-          <div className="parent-basic">
+          <div className="parent-basic flex flex-wrap ">
             {buttons.map((button) => (
               <button
                 key={button.label}

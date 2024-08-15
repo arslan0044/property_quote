@@ -2,33 +2,17 @@ import React from "react";
 
 import { BiSearch } from "react-icons/bi";
 
-function QuoteTypeDetails() {
-  const quoteData = [
-    {
-      name: "Sale",
-    },
-    {
-      name: "Purchase",
-    },
-    {
-      name: "Sale & Purchase",
-    },
-    {
-      name: "Remortage",
-    },
-    {
-      name: "transfer of Equity",
-    },
-  ];
+function TRANSFER_OF_EQUITY() {
+
   return (
     <>
-      <div className="w-[50%] mx-auto my-14">
+      <div className="w-4/5 lg:w-2/4 mx-auto my-14">
         <div className="dashboard w-full rounded-lg">
           <p className="bg-black text-white py-2 font-bold text-2xl text-center rounded-md">
             Transfer of Equity
           </p>
           <div className="flex flex-col items-end py-4 px-8 gap-7">
-            <select className="px-3 py-2 text-xl text-gray-600 items-center flex bg-gray-300 rounded-md w-[50%]">
+            {/* <select className="px-3 py-2 text-xl text-gray-600 items-center flex bg-gray-300 rounded-md w-[50%]">
               <option>Same as Corospondence address</option>
               <option>Same as Corospondence address</option>
               <option>Same as Corospondence address</option>
@@ -36,12 +20,12 @@ function QuoteTypeDetails() {
               <option>Same as Corospondence address</option>
               <option>Same as Corospondence address</option>
               <option>Same as Corospondence address</option>
-            </select>
+            </select> */}
             <div className="flex justify-between w-full items-center">
               <p className="w-[50%] text-xl font-bold text-gray-600">
                 Postcode <span className="text-red-600 ml-2">*</span>
               </p>
-              <div className="w-[50%] flex gap-7">
+              <div className="w-[50%] flex flex-col md:flex-row gap-7">
                 <input
                   type="text"
                   placeholder="L35 3XE"
@@ -77,13 +61,8 @@ function QuoteTypeDetails() {
                 Transfer: <span className="text-red-600 ml-3">*</span>
               </p>
               <select className="px-3 py-2 text-xl text-gray-600 items-center flex bg-gray-300 rounded-md w-[50%]">
-                <option>Same as Corospondence address</option>
-                <option>Same as Corospondence address</option>
-                <option>Same as Corospondence address</option>
-                <option>Same as Corospondence address</option>
-                <option>Same as Corospondence address</option>
-                <option>Same as Corospondence address</option>
-                <option>Same as Corospondence address</option>
+                <option>Whole</option>
+                <option>Part</option>         
               </select>
             </div>
             <div className="flex justify-between w-full items-center">
@@ -159,4 +138,4 @@ function QuoteTypeDetails() {
   );
 }
 
-export default QuoteTypeDetails;
+export default TRANSFER_OF_EQUITY;

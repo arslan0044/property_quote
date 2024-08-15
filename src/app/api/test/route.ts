@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
         const calculator = await prisma.calculator.create({
             data: {
                 name: data.name,
-                url:data.url,
+                htmlurl:data.htmlurl,
+                jsonurl:data.jsonurl,
                 quoteTypes: {
                     create: data.quote_types.map((quoteType: {
                         type: string;
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest) {
                             create: quoteType.supplements?.map(supplement => ({
                                 title: supplement.title,
                                 cost: supplement.cost,
+                                type: supplement.type,
                                 free: supplement.free,
                                 joinQuotes: supplement.joinQuotes,
                                 perIndividual: supplement.perIndividual,
@@ -65,6 +67,7 @@ export async function POST(request: NextRequest) {
                             create: quoteType.disbursements?.map(disbursement => ({
                                 title: disbursement.title,
                                 cost: disbursement.cost,
+                                type: disbursement.type,
                                 free: disbursement.free,
                                 joinQuotes: disbursement.joinQuotes,
                                 perIndividual: disbursement.perIndividual,

@@ -15,7 +15,7 @@ function BuyingClientComp() {
 
 function BuyingBody() {
   const purchaseRules = [
-    { name: "Action/Repossession" },
+    { name: "Action / Repossession" },
     { name: "Buying But to let 2nd home" },
     { name: "Client is company" },
     { name: "Buing First time buyer" },
@@ -29,7 +29,7 @@ function BuyingBody() {
     { name: "Buing Unregisterd" },
   ];
   return (
-    <div className="w-[50%] mx-auto my-14">
+    <div className="w-4/5 lg:w-1/2 mx-auto my-14">
       <div className="dashboard w-full rounded-lg">
         <p className="bg-black text-white py-2 font-bold text-2xl text-center rounded-md">
           Buying a Property

@@ -65,28 +65,26 @@ export async function PUT(
     await prisma.$transaction([
       prisma.value.deleteMany({ where: { quoteType: { calculatorId } } }),
       prisma.supplement.deleteMany({ where: { quoteType: { calculatorId } } }),
-      prisma.disbursement.deleteMany({ where: { quoteType: { calculatorId } } }),
+      prisma.disbursement.deleteMany({
+        where: { quoteType: { calculatorId } },
+      }),
       prisma.quoteType.deleteMany({ where: { calculatorId } }),
     ]);
-
 
     // Step 2: Update calculator
     const updatedCalc = await prisma.calculator.update({
       where: { id: calculatorId },
-      data: { name: data.name, url:data.url, },
+      data: { name: data.name, htmlurl: data.htmlurl, jsonurl: data.jsonurl },
     });
-
 
     // Step 3: Create new quote types and related records
     for (const quoteType of data.quote_types) {
-      
       const newQuoteType = await prisma.quoteType.create({
         data: {
           type: quoteType.type,
           calculatorId: updatedCalc.id,
         },
       });
-
 
       if (quoteType.values && quoteType.values.length > 0) {
         await prisma.value.createMany({
@@ -116,7 +114,6 @@ export async function PUT(
       }
     }
 
-
     // Step 4: Fetch and return the updated calculator with all related data
     const updatedCalculator = await prisma.calculator.findUnique({
       where: { id: updatedCalc.id },
@@ -131,7 +128,6 @@ export async function PUT(
       },
     });
 
-
     return NextResponse.json(updatedCalculator);
   } catch (error) {
     console.error("Error in PUT:", error);
@@ -144,7 +140,6 @@ export async function PUT(
     );
   }
 }
-
 
 export async function PATCH(
   request: NextRequest,
@@ -165,7 +160,7 @@ export async function PATCH(
       where: { id },
       data: {
         name: data.name,
-        url:data.url,
+        url: data.url,
         quoteTypes: {
           deleteMany: {},
           create: data.quote_types.map((quoteType: any) => ({

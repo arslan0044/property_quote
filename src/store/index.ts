@@ -1,4 +1,4 @@
-import { proxy } from 'valtio';
+import { proxy } from "valtio";
 
 // Define types based on your schema
 type Value = {
@@ -16,6 +16,7 @@ type Supplement = {
   id: number;
   quoteTypeId: number;
   title: string;
+  type: string;
   cost: number; // Changed to string
   free: boolean;
   joinQuotes: boolean;
@@ -28,6 +29,7 @@ type Disbursement = {
   id: number;
   quoteTypeId: number;
   title: string;
+  type: string;
   cost: number; // Changed to string
   free: boolean;
   joinQuotes: boolean;
@@ -47,20 +49,33 @@ type QuoteType = {
 
 type Calculator = {
   id: number;
-  url:string;
+  jsonurl: string;
+  htmlurl: string;
   name: string;
+  
   quoteTypes: QuoteType[];
 };
 
 enum QuoteTypeEnum {
-  SALE = 'SALE',
-  PURCHASE = 'PURCHASE',
-  REMORTGAGE = 'REMORTGAGE',
-  TRANSFER_OF_EQUITY = 'TRANSFER_OF_EQUITY',
+  SALE = "SALE",
+  PURCHASE = "PURCHASE",
+  REMORTGAGE = "REMORTGAGE",
+  TRANSFER_OF_EQUITY = "TRANSFER_OF_EQUITY",
 }
 
 const defaultQuoteType = {
-  feeTable: [{ id: Date.now(), quoteTypeId: -1, propertyValueStart: 0, propertyValueEnd: 100000, legalFees: 100, percentageOfValue: false, plusFixedFee: false, pricedOnApplication: false }],
+  feeTable: [
+    {
+      id: Date.now(),
+      quoteTypeId: -1,
+      propertyValueStart: 0,
+      propertyValueEnd: 100000,
+      legalFees: 100,
+      percentageOfValue: false,
+      plusFixedFee: false,
+      pricedOnApplication: false,
+    },
+  ],
   supplements: [],
   disbursements: [],
 };
@@ -71,12 +86,16 @@ const store = proxy<{
   currentCalculator: {
     id?: number;
     name: string;
-    url: string;
-    quoteTypes: Record<QuoteTypeEnum, {
-      feeTable: Value[];
-      supplements: Supplement[];
-      disbursements: Disbursement[];
-    }>;
+    htmlurl: string;
+    jsonurl: string;
+    quoteTypes: Record<
+      QuoteTypeEnum,
+      {
+        feeTable: Value[];
+        supplements: Supplement[];
+        disbursements: Disbursement[];
+      }
+    >;
   };
   activeQuoteType: QuoteTypeEnum;
   isAddingCalculator: boolean;
@@ -84,8 +103,9 @@ const store = proxy<{
 }>({
   calculators: [],
   currentCalculator: {
-    name: '',
-    url: '',
+    name: "",
+    htmlurl: "",
+    jsonurl: "",
     quoteTypes: {
       [QuoteTypeEnum.SALE]: { ...defaultQuoteType },
       [QuoteTypeEnum.PURCHASE]: { ...defaultQuoteType },
@@ -102,8 +122,11 @@ const store = proxy<{
 function setCalculatorName(name: string) {
   store.currentCalculator.name = name;
 }
-function setCalculatorUrl(url: string) {
-  store.currentCalculator.url = url;
+function setCalculatorHtmlUrl(htmlurl: string) {
+  store.currentCalculator.htmlurl = htmlurl;
+}
+function setCalculatorJsonUrl(jsonurl: string) {
+  store.currentCalculator.jsonurl = jsonurl;
 }
 
 function setActiveQuoteType(type: QuoteTypeEnum) {
@@ -118,7 +141,10 @@ function updateSupplements(type: QuoteTypeEnum, supplements: Supplement[]) {
   store.currentCalculator.quoteTypes[type].supplements = supplements;
 }
 
-function updateDisbursements(type: QuoteTypeEnum, disbursements: Disbursement[]) {
+function updateDisbursements(
+  type: QuoteTypeEnum,
+  disbursements: Disbursement[]
+) {
   store.currentCalculator.quoteTypes[type].disbursements = disbursements;
 }
 
@@ -131,8 +157,9 @@ function toggleAddingCalculator() {
 
 function resetCurrentCalculator() {
   store.currentCalculator = {
-    name: '',
-    url: '',
+    name: "",
+    htmlurl: "",
+    jsonurl: "",
     quoteTypes: {
       [QuoteTypeEnum.SALE]: { ...defaultQuoteType },
       [QuoteTypeEnum.PURCHASE]: { ...defaultQuoteType },
@@ -144,53 +171,57 @@ function resetCurrentCalculator() {
 
 function setIsSaving(isSaving: boolean) {
   store.isSaving = isSaving;
-  
 }
 
 function updateCalculator(calculator: Calculator) {
   store.currentCalculator = {
     id: calculator.id,
     name: calculator.name,
-    url: calculator.url,
+    htmlurl: calculator.htmlurl,
+    jsonurl: calculator.jsonurl,
     quoteTypes: Object.fromEntries(
-      calculator.quoteTypes.map(quoteType => [
+      calculator.quoteTypes.map((quoteType) => [
         quoteType.type,
         {
-          feeTable: quoteType.values.map(value => ({
+          feeTable: quoteType.values.map((value) => ({
             ...value,
             propertyValueStart: Number(value.propertyValueStart),
             propertyValueEnd: Number(value.propertyValueEnd),
             legalFees: Number(value.legalFees),
           })),
-          supplements: quoteType.supplements.map(supplement => ({
+          supplements: quoteType.supplements.map((supplement) => ({
             ...supplement,
             cost: supplement.cost,
           })),
-          disbursements: quoteType.disbursements.map(disbursement => ({
+          disbursements: quoteType.disbursements.map((disbursement) => ({
             ...disbursement,
             cost: disbursement.cost,
           })),
-        }
+        },
       ])
-    ) as Record<QuoteTypeEnum, {
-      feeTable: Value[];
-      supplements: Supplement[];
-      disbursements: Disbursement[];
-    }>,
+    ) as Record<
+      QuoteTypeEnum,
+      {
+        feeTable: Value[];
+        supplements: Supplement[];
+        disbursements: Disbursement[];
+      }
+    >,
   };
 }
 
-export { 
-  store, 
-  QuoteTypeEnum, 
+export {
+  store,
+  QuoteTypeEnum,
   setCalculatorName,
-  setCalculatorUrl, 
-  setActiveQuoteType, 
-  updateFeeTable, 
-  updateSupplements, 
+  setCalculatorHtmlUrl,
+  setCalculatorJsonUrl,
+  setActiveQuoteType,
+  updateFeeTable,
+  updateSupplements,
   updateDisbursements,
   toggleAddingCalculator,
   setIsSaving,
   updateCalculator,
-  resetCurrentCalculator
+  resetCurrentCalculator,
 };

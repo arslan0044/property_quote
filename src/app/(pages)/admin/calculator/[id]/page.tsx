@@ -1,5 +1,12 @@
 "use client";
-import React, { FC, useCallback, useState, useEffect, useRef, useMemo } from "react";
+import React, {
+  FC,
+  useCallback,
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+} from "react";
 import { FaRegTrashAlt, FaPlus } from "react-icons/fa";
 import { useSnapshot } from "valtio";
 import {
@@ -12,12 +19,13 @@ import {
   updateDisbursements,
   setIsSaving,
   updateCalculator,
-  setCalculatorUrl,
+  setCalculatorHtmlUrl,
+  setCalculatorJsonUrl,
 } from "@/store";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Image from "next/image";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
 
 type Value = {
   id: number;
@@ -85,7 +93,6 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
 
     fetchCalculator();
   }, [params.id]);
-
   function TableRow({
     id,
     start,
@@ -105,20 +112,55 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
     const [localEnd, setLocalEnd] = useState(end);
     const [localLegalFees, setLocalLegalFees] = useState(legalFees.toString());
 
-    const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const startTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const endTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const legalFeesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleInputChange = useCallback((field: string, value: string) => {
-      if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current);
+      if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
+      
+      if (field === 'start') setLocalStart(value);
+      else if (field === 'end') setLocalEnd(value);
+      else if (field === 'legalFees') setLocalLegalFees(value);
 
-      if (field === "start") setLocalStart(value);
-      else if (field === "end") setLocalEnd(value);
-      else if (field === "legalFees") setLocalLegalFees(value);
-
-      updateTimeoutRef.current = setTimeout(() => {
-        onInputChange(id, field, field === "legalFees" ? parseFloat(value) : parseInt(value, 10));
+      blurTimeoutRef.current = setTimeout(() => {
         (document.activeElement as HTMLElement)?.blur();
       }, 1500);
-    }, [id, onInputChange]);
+    }, []);
+
+    useEffect(() => {
+      if (startTimeoutRef.current) clearTimeout(startTimeoutRef.current);
+      startTimeoutRef.current = setTimeout(() => {
+        onInputChange(id, "propertyValueStart", localStart);
+      }, 500);
+
+      return () => {
+        if (startTimeoutRef.current) clearTimeout(startTimeoutRef.current);
+      };
+    }, [localStart, id, onInputChange]);
+
+    useEffect(() => {
+      if (endTimeoutRef.current) clearTimeout(endTimeoutRef.current);
+      endTimeoutRef.current = setTimeout(() => {
+        onInputChange(id, "propertyValueEnd", localEnd);
+      }, 500);
+
+      return () => {
+        if (endTimeoutRef.current) clearTimeout(endTimeoutRef.current);
+      };
+    }, [localEnd, id, onInputChange]);
+
+    useEffect(() => {
+      if (legalFeesTimeoutRef.current) clearTimeout(legalFeesTimeoutRef.current);
+      legalFeesTimeoutRef.current = setTimeout(() => {
+        onInputChange(id, "legalFees", parseFloat(localLegalFees));
+      }, 500);
+
+      return () => {
+        if (legalFeesTimeoutRef.current) clearTimeout(legalFeesTimeoutRef.current);
+      };
+    }, [localLegalFees, id, onInputChange]);
 
     const handleCheckboxChange = useCallback(
       (field: string, value: boolean) => {
@@ -127,45 +169,31 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
       [id, onInputChange]
     );
 
-    useEffect(() => {
-      return () => {
-        if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current);
-      };
-    }, []);
-
-    const memoizedInputs = useMemo(() => (
-      <div className="inputs flex-1">
-        <input
-          type="number"
-          placeholder="Start"
-          value={localStart}
-          onChange={(e) => handleInputChange("start", e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="End"
-          value={localEnd}
-          onChange={(e) => handleInputChange("end", e.target.value)}
-        />
-      </div>
-    ), [localStart, localEnd, handleInputChange]);
-
-    const memoizedLegalFees = useMemo(() => (
-      <div className="flex items-center">
-        <label>£</label>
-        <input
-          type="number"
-          value={localLegalFees}
-          onChange={(e) => handleInputChange("legalFees", e.target.value)}
-        />
-      </div>
-    ), [localLegalFees, handleInputChange]);
-
     return (
       <div className="datatable my-6 flex items-center">
-        {memoizedInputs}
+        <div className="inputs flex-1">
+          <input
+            type="number"
+            placeholder="Start"
+            value={localStart}
+            onChange={(e) => handleInputChange('start', e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="End"
+            value={localEnd}
+            onChange={(e) => handleInputChange('end', e.target.value)}
+          />
+        </div>
         <div className="valuesdata flex-1 flex items-center justify-between">
-          {memoizedLegalFees}
+          <div className="flex items-center">
+            <label>£</label>
+            <input
+              type="number"
+              value={localLegalFees}
+              onChange={(e) => handleInputChange('legalFees', e.target.value)}
+            />
+          </div>
           <input
             type="checkbox"
             checked={percentageOfValue}
@@ -221,7 +249,6 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
       </div>
     );
   }
-
   function FeeTable() {
     const rows =
       snap.currentCalculator.quoteTypes[snap.activeQuoteType].feeTable;
@@ -341,11 +368,24 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
     );
   }
   const selectedOptions = [
+    "Free Hold",
+    "Lease Hold",
+    "All Sale Quotes",
+    "All Purchase Quotes",
+    "All Remortgage Quotes",
+    "Transfer of Equity",
     "Client is Company",
-    "Client is Individual",
-    "Client is Government",
-    "Client is Non-Profit",
-    "Client is Other",
+    "Action/Repossession",
+    "Buying But to let 2nd homer",
+    "Buing First time buyer",
+    "Gifted Deposit",
+    "Help-To-Buy ISA",
+    "Mortgaged",
+    "New Build",
+    "Buing known Uk Resident",
+    "Right to buy",
+    "Shared ownership",
+    "Buing Unregisterd",
   ];
 
   const Field: React.FC<FieldProps> = React.memo(
@@ -354,13 +394,16 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
       const [localData, setLocalData] = useState(data);
       const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-      const checkboxValues = useMemo(() => [
-        { label: "Free", name: "free" },
-        { label: "Only show once on Join quotes", name: "joinQuotes" },
-        { label: "Per individual", name: "perIndividual" },
-        { label: "Variable", name: "variable" },
-        { label: "Price on Application", name: "pricedOnApplication" },
-      ], []);
+      const checkboxValues = useMemo(
+        () => [
+          { label: "Free", name: "free" },
+          { label: "Only show once on Join quotes", name: "joinQuotes" },
+          { label: "Per individual", name: "perIndividual" },
+          { label: "Variable", name: "variable" },
+          { label: "Price on Application", name: "pricedOnApplication" },
+        ],
+        []
+      );
 
       useEffect(() => {
         setLocalData(data);
@@ -505,6 +548,7 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
         id: Date.now(),
         quoteTypeId: Object.values(QuoteTypeEnum).indexOf(snap.activeQuoteType),
         title: "",
+        type: "",
         cost: 0,
         free: false,
         joinQuotes: false,
@@ -563,6 +607,7 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
         id: Date.now(),
         quoteTypeId: Object.values(QuoteTypeEnum).indexOf(snap.activeQuoteType),
         title: "",
+        type: "",
         cost: 0,
         free: false,
         joinQuotes: false,
@@ -624,9 +669,7 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
     return (
       <div className="fixed inset-0  bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white p-6 rounded-lg shadow-xl">
-          <h3 className="text-4xl font-bold  mb-4">
-            Confirm Deletion
-          </h3>
+          <h3 className="text-4xl font-bold  mb-4">Confirm Deletion</h3>
           <p className="mb-6 text-3xl">
             Are you sure you want to delete this field?
           </p>
@@ -725,6 +768,7 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
         (supp) => ({
           title: supp.title,
           cost: supp.cost,
+          type: supp.type,
           free: supp.free,
           joinQuotes: supp.joinQuotes,
           perIndividual: supp.perIndividual,
@@ -736,6 +780,7 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
         quoteType
       ].disbursements.map((disb) => ({
         title: disb.title,
+        type: disb.type,
         cost: disb.cost,
         free: disb.free,
         joinQuotes: disb.joinQuotes,
@@ -747,7 +792,8 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
 
     const calculatorData = {
       name: snap.currentCalculator.name,
-      url: snap.currentCalculator.url,
+      htmlurl: snap.currentCalculator.htmlurl,
+      jsonurl: snap.currentCalculator.jsonurl,
       quote_types: quoteTypes,
     };
 
@@ -767,10 +813,8 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
         // Force refresh the page
         router.refresh();
       }, 15000);
-      
 
       setIsSaving(false);
-      
     } catch (error) {
       console.error("Error saving calculator:", error);
       toast.error("Error saving calculator");
@@ -782,7 +826,7 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
     try {
       await axios.delete(`/api/test/${params.id}`);
       toast.success("Calculator deleted successfully");
-      router.push("/admin/calculator")
+      router.push("/admin/calculator");
       // Redirect to calculator list or home page
     } catch (error) {
       console.error("Error deleting calculator:", error);
@@ -817,7 +861,7 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
   return (
     <div className="">
       <div className="mt-6">
-      <div className=" flex flex-row justify-around">
+        <div className=" flex flex-row justify-around">
           <input
             type="text"
             id="calculatorname"
@@ -832,14 +876,23 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
             type="text"
             id="calculatorurl"
             name="calculatorurl"
-            placeholder="Calculator URL"
-            value={snap.currentCalculator.url}
-            onChange={(e) => setCalculatorUrl(e.target.value)}
+            placeholder="Calculator JSON URL"
+            value={snap.currentCalculator.jsonurl}
+            onChange={(e) => setCalculatorJsonUrl(e.target.value)}
             className="text-left"
             required
           />
-
-          </div>
+          <input
+            type="text"
+            id="calculatorurl"
+            name="calculatorurl"
+            placeholder="Calculator HTML URL"
+            value={snap.currentCalculator.htmlurl}
+            onChange={(e) => setCalculatorHtmlUrl(e.target.value)}
+            className="text-left"
+            required
+          />
+        </div>
         <BaseCalculator />
         <div className="fixed bottom-0 left-0 gap-8 backdrop-blur-[1px] right-0 shadow-md p-4 flex justify-end">
           <button

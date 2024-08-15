@@ -11,7 +11,8 @@ import {
   updateSupplements,
   updateDisbursements,
   toggleAddingCalculator,
-  setCalculatorUrl,
+  setCalculatorHtmlUrl,
+  setCalculatorJsonUrl,
   setIsSaving,
   resetCurrentCalculator,
 } from "@/store";
@@ -338,11 +339,24 @@ const CalculatorListPage: FC = () => {
     );
   }
   const selectedOptions = [
+    "Free Hold",
+    "Lease Hold",
+    "All Sale Quotes",
+    "All Purchase Quotes",
+    "All Remortgage Quotes",
+    "All Transfer of Equity Quotes",
     "Client is Company",
-    "Client is Individual",
-    "Client is Government",
-    "Client is Non-Profit",
-    "Client is Other",
+    "Action/Repossession",
+    "Buying But to let 2nd homer",
+    "Buing First time buyer",
+    "Gifted Deposit",
+    "Help-To-Buy ISA",
+    "Mortgaged",
+    "New Build",
+    "Buing known Uk Resident",
+    "Right to buy",
+    "Shared ownership",
+    "Buing Unregisterd",
   ];
 
 
@@ -501,6 +515,7 @@ const CalculatorListPage: FC = () => {
         quoteTypeId: Object.values(QuoteTypeEnum).indexOf(snap.activeQuoteType),
         title: "",
         cost: 0,
+        type:"",
         free: false,
         joinQuotes: false,
         perIndividual: false,
@@ -558,6 +573,7 @@ const CalculatorListPage: FC = () => {
         id: Date.now(),
         quoteTypeId: Object.values(QuoteTypeEnum).indexOf(snap.activeQuoteType),
         title: "",
+        type:"",
         cost: 0,
         free: false,
         joinQuotes: false,
@@ -712,6 +728,7 @@ const CalculatorListPage: FC = () => {
       })),
       supplements: snap.currentCalculator.quoteTypes[quoteType].supplements.map(supp => ({
         title: supp.title,
+        type: supp.type,
         cost: Number(supp.cost),
         free: supp.free,
         joinQuotes: supp.joinQuotes,
@@ -723,6 +740,7 @@ const CalculatorListPage: FC = () => {
         title: disb.title,
         cost: Number(disb.cost),
         free: disb.free,
+        type: disb.type,
         joinQuotes: disb.joinQuotes,
         perIndividual: disb.perIndividual,
         variable: disb.variable,
@@ -732,7 +750,8 @@ const CalculatorListPage: FC = () => {
 
     const calculatorData = {
       name: snap.currentCalculator.name,
-      url: snap.currentCalculator.url,
+      htmlurl: snap.currentCalculator.htmlurl,
+      jsonurl: snap.currentCalculator.jsonurl,
       quote_types: quoteTypes
     };
 
@@ -786,9 +805,19 @@ const CalculatorListPage: FC = () => {
             type="text"
             id="calculatorurl"
             name="calculatorurl"
-            placeholder="Calculator URL"
-            value={snap.currentCalculator.url}
-            onChange={(e) => setCalculatorUrl(e.target.value)}
+            placeholder="Calculator JSON URL"
+            value={snap.currentCalculator.jsonurl}
+            onChange={(e) => setCalculatorJsonUrl(e.target.value)}
+            className="text-left"
+            required
+          />
+          <input
+            type="text"
+            id="calculatorurl"
+            name="calculatorurl"
+            placeholder="Calculator HTML URL"
+            value={snap.currentCalculator.htmlurl}
+            onChange={(e) =>  setCalculatorHtmlUrl(e.target.value)}
             className="text-left"
             required
           />

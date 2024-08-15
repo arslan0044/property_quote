@@ -8,13 +8,13 @@ import { BiSearch } from "react-icons/bi";
 function SalesClientComp() {
   return (
     <>
-      <div className="w-[50%] mx-auto my-14">
+      <div className="w-4/5 lg:w-1/2 mx-auto my-14">
         <div className="dashboard w-full rounded-lg">
           <p className="bg-black text-white py-2 font-bold text-2xl text-center rounded-md">
             Selling a porperty
           </p>
           <div className="flex flex-col items-end py-4 px-8 gap-7">
-            <select className="px-3 py-2 text-xl text-gray-600 items-center flex bg-gray-300 rounded-md w-[50%]">
+            {/* <select className="px-3 py-2 text-xl text-gray-600 items-center flex bg-gray-300 rounded-md w-[50%]">
               <option>Same as Corospond Build</option>
               <option>Same as Corospond Build</option>
               <option>Same as Corospond Build</option>
@@ -22,7 +22,7 @@ function SalesClientComp() {
               <option>Same as Corospond Build</option>
               <option>Same as Corospond Build</option>
               <option>Same as Corospond Build</option>
-            </select>
+            </select> */}
             <div className="flex justify-between w-full items-center">
               <p className="w-[50%] text-xl font-bold text-gray-600">
                 Postcode <span className="text-red-600 ml-2">*</span>
@@ -80,15 +80,15 @@ function SalesClientComp() {
             </div>
             <div className="flex gap-4 w-[50%]">
               <input type="checkbox" name="" id="" />
-              <p className="font-medium text-gray-600 text-xl">
+              <label className="font-medium text-gray-600 text-xl">
                 Client is Company
-              </p>
+              </label>
             </div>
             <div className="flex gap-4 w-[50%]">
               <input type="checkbox" name="" id="" />
-              <p className="font-medium text-gray-600 text-xl">
-                Sharped Ownership
-              </p>
+              <label className="font-medium text-gray-600 text-xl">
+                Shared Ownership
+              </label>
             </div>
           </div>
         </div>
