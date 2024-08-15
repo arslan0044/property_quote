@@ -101,7 +101,7 @@ const ClientPage: FC = () => {
         className="px-3 py-2 text-2xl text-gray-600 items-center flex bg-gray-300 rounded-md w-[25%] font-bold"
         onChange={handleSelectChange}
       >
-       {selectedCalculator === "" && <option value="">Select an option</option>}
+       {selectedCalculator === "" && <option value="">Select a Calculator</option>}
         {calculators.map((calculator) => (
           <option key={calculator.id} value={calculator.name}>
             {calculator.name}
