@@ -1,10 +1,10 @@
 "use client";
 import React, { FC, useState } from "react";
-import SalesClientComp from "./SaleClient";
-import BuyingClientComp from "./Buying";
-import SaleAndPurchase from "./SaleAndPurchase";
-import QuoteTypeDetails from "./clientPage";
-import RemogtageClient from "./Remogtage"; // Adjust the import path as needed
+import SalesClientComp from "@/components/client/Sale";
+import BuyingClientComp from "@/components/client/Buying";
+import SaleAndPurchase from "@/components/client/SaleAndPurchase";
+import QuoteTypeDetails from "@/components/client/clientPage";
+import RemogtageClient from "@/components/client/Remogtage"; 
 
 enum QuoteTypeEnum {
   SALE = "SALE",

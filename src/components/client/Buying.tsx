@@ -39,7 +39,7 @@ function BuyingBody() {
             <p className="w-[50%] text-xl font-bold text-gray-600">
               Postcode <span className="text-red-600 ml-2">*</span>
             </p>
-            <div className="w-[50%] flex gap-7 flex-wrap">
+            <div className="w-[50%] flex gap-7 flex-wrap items-center">
               <input type="text" placeholder="L35 3XE" className="text-left" />{" "}
               <button className="flex bg-black text-white py-3 px-5 rounded-md shadow-md items-center text-xl font-bold">
                 <BiSearch className="font-bold text-white text-xl" /> LookUp
