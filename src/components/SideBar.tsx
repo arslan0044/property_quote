@@ -20,12 +20,14 @@ const SideBar: React.FC<SidebarProps> = ({ isOpen, isAdmin, handleLogout }) => {
   const data: MenuItem[] = isAdmin 
     ? [ // Show all links if isAdmin is true
         { link: "/admin", name: "Admin" },
-        { link: "/admin/users", name: "Users" },
         { link: "/admin/calculator", name: "Calculators" },
         { link: "/client", name: "Client" },
+        { link: "/client/customer", name: "Customer" },
+        { link: "/admin/users", name: "Users" },
       ] 
     : [ // Show only Client link if isAdmin is false
         { link: "/client", name: "Client" },
+        { link: "/client/customer", name: "Customer" },
       ];
      
     

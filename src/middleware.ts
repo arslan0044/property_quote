@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 export const admin = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/client/:path*'],
+}
+export const Client = {
+  matcher: ['/client/:path*'],
 }
 const getUserFromToken = async (token: string) => {
   try {
@@ -21,7 +24,7 @@ const getUserFromToken = async (token: string) => {
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isLoginPath = path === "/";
-  const isClientPath = path === "/client";
+  const isClientPath = Client;
   const isAdminPath = admin;
  
 
@@ -38,7 +41,7 @@ export async function middleware(request: NextRequest) {
     if (!isAdminPath && user.isAdmin) {
       return NextResponse.redirect(new URL("/admin", request.nextUrl));
     }
-    if (!user.isAdmin && path !== "/client") {
+    if (!user.isAdmin && !isClientPath) {
       return NextResponse.redirect(new URL("/client", request.nextUrl));
     }
   }
