@@ -58,7 +58,8 @@ function RegisterForm({
       return false;
     }
     if (user.password.length < 8) {
-      alert("Password must be at least 8 characters long");
+      // alert("Password must be at least 8 characters long");
+      toast.info("Password must be at least 8 characters long")
       return false;
     }
     return true;

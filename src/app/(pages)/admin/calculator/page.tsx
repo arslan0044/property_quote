@@ -11,7 +11,9 @@ import {
   updateSupplements,
   updateDisbursements,
   toggleAddingCalculator,
+  setCalculatorUrl,
   setIsSaving,
+  resetCurrentCalculator,
 } from "@/store";
 import axios from 'axios';
 import CalculatorTable from "@/components/admin/ui/CalculatorTable";
@@ -730,6 +732,7 @@ const CalculatorListPage: FC = () => {
 
     const calculatorData = {
       name: snap.currentCalculator.name,
+      url: snap.currentCalculator.url,
       quote_types: quoteTypes
     };
 
@@ -745,6 +748,7 @@ const CalculatorListPage: FC = () => {
       toast.success("New Calculator saved successfully")
       setIsSaving(false);
       toggleAddingCalculator();
+      // resetCurrentCalculator()
       // You might want to add some success notification here
     } catch (error) {
       console.error('Error saving calculator:', error);
@@ -775,6 +779,16 @@ const CalculatorListPage: FC = () => {
             placeholder="Calculator Name"
             value={snap.currentCalculator.name}
             onChange={(e) => setCalculatorName(e.target.value)}
+            className="text-left"
+            required
+          />
+          <input
+            type="text"
+            id="calculatorurl"
+            name="calculatorurl"
+            placeholder="Calculator URL"
+            value={snap.currentCalculator.url}
+            onChange={(e) => setCalculatorUrl(e.target.value)}
             className="text-left"
             required
           />

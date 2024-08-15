@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
         const calculator = await prisma.calculator.create({
             data: {
                 name: data.name,
+                url:data.url,
                 quoteTypes: {
                     create: data.quote_types.map((quoteType: {
                         type: string;

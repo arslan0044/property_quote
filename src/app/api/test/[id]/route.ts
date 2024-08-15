@@ -73,7 +73,7 @@ export async function PUT(
     // Step 2: Update calculator
     const updatedCalc = await prisma.calculator.update({
       where: { id: calculatorId },
-      data: { name: data.name },
+      data: { name: data.name, url:data.url, },
     });
 
 
@@ -165,6 +165,7 @@ export async function PATCH(
       where: { id },
       data: {
         name: data.name,
+        url:data.url,
         quoteTypes: {
           deleteMany: {},
           create: data.quote_types.map((quoteType: any) => ({

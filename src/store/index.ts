@@ -47,6 +47,7 @@ type QuoteType = {
 
 type Calculator = {
   id: number;
+  url:string;
   name: string;
   quoteTypes: QuoteType[];
 };
@@ -70,6 +71,7 @@ const store = proxy<{
   currentCalculator: {
     id?: number;
     name: string;
+    url: string;
     quoteTypes: Record<QuoteTypeEnum, {
       feeTable: Value[];
       supplements: Supplement[];
@@ -83,6 +85,7 @@ const store = proxy<{
   calculators: [],
   currentCalculator: {
     name: '',
+    url: '',
     quoteTypes: {
       [QuoteTypeEnum.SALE]: { ...defaultQuoteType },
       [QuoteTypeEnum.PURCHASE]: { ...defaultQuoteType },
@@ -98,6 +101,9 @@ const store = proxy<{
 // Functions to update store
 function setCalculatorName(name: string) {
   store.currentCalculator.name = name;
+}
+function setCalculatorUrl(url: string) {
+  store.currentCalculator.url = url;
 }
 
 function setActiveQuoteType(type: QuoteTypeEnum) {
@@ -126,6 +132,7 @@ function toggleAddingCalculator() {
 function resetCurrentCalculator() {
   store.currentCalculator = {
     name: '',
+    url: '',
     quoteTypes: {
       [QuoteTypeEnum.SALE]: { ...defaultQuoteType },
       [QuoteTypeEnum.PURCHASE]: { ...defaultQuoteType },
@@ -137,12 +144,14 @@ function resetCurrentCalculator() {
 
 function setIsSaving(isSaving: boolean) {
   store.isSaving = isSaving;
+  
 }
 
 function updateCalculator(calculator: Calculator) {
   store.currentCalculator = {
     id: calculator.id,
     name: calculator.name,
+    url: calculator.url,
     quoteTypes: Object.fromEntries(
       calculator.quoteTypes.map(quoteType => [
         quoteType.type,
@@ -174,12 +183,14 @@ function updateCalculator(calculator: Calculator) {
 export { 
   store, 
   QuoteTypeEnum, 
-  setCalculatorName, 
+  setCalculatorName,
+  setCalculatorUrl, 
   setActiveQuoteType, 
   updateFeeTable, 
   updateSupplements, 
   updateDisbursements,
   toggleAddingCalculator,
   setIsSaving,
-  updateCalculator
+  updateCalculator,
+  resetCurrentCalculator
 };

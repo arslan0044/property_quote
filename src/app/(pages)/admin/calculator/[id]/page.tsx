@@ -12,6 +12,7 @@ import {
   updateDisbursements,
   setIsSaving,
   updateCalculator,
+  setCalculatorUrl,
 } from "@/store";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -746,10 +747,11 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
 
     const calculatorData = {
       name: snap.currentCalculator.name,
+      url: snap.currentCalculator.url,
       quote_types: quoteTypes,
     };
 
-    console.log(JSON.stringify(calculatorData, null, 2));
+    // console.log(JSON.stringify(calculatorData, null, 2));
 
     return calculatorData;
   };
@@ -815,16 +817,29 @@ const CalculatorPage: FC<CalculatorPageProps> = ({ params }) => {
   return (
     <div className="">
       <div className="mt-6">
-        <input
-          type="text"
-          id="calculatorname"
-          name="calculatorname"
-          placeholder="Calculator Name"
-          value={snap.currentCalculator.name}
-          onChange={(e) => setCalculatorName(e.target.value)}
-          className="text-left"
-          required
-        />
+      <div className=" flex flex-row justify-around">
+          <input
+            type="text"
+            id="calculatorname"
+            name="calculatorname"
+            placeholder="Calculator Name"
+            value={snap.currentCalculator.name}
+            onChange={(e) => setCalculatorName(e.target.value)}
+            className="text-left"
+            required
+          />
+          <input
+            type="text"
+            id="calculatorurl"
+            name="calculatorurl"
+            placeholder="Calculator URL"
+            value={snap.currentCalculator.url}
+            onChange={(e) => setCalculatorUrl(e.target.value)}
+            className="text-left"
+            required
+          />
+
+          </div>
         <BaseCalculator />
         <div className="fixed bottom-0 left-0 gap-8 backdrop-blur-[1px] right-0 shadow-md p-4 flex justify-end">
           <button

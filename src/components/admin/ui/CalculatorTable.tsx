@@ -15,6 +15,7 @@ const CalculatorTable: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [id, setId] =useState(0)
 
   useEffect(() => {
     const fetchCalculators = async () => {
@@ -31,17 +32,16 @@ const CalculatorTable: React.FC = () => {
 
     fetchCalculators();
   }, []);
-  const deleteCalculator = async (id:number) => {
+  const deleteCalculator = async (id: number) => {
     try {
       await axios.delete(`/api/test/${id}`);
-      toast.success("Calculator deleted successfully");
+      toast.success(` ${id} Calculator deleted successfully`);
       // Redirect to calculator list or home page
     } catch (error) {
       console.error("Error deleting calculator:", error);
       toast.error("Error deleting calculator");
     }
   };
-
 
   if (isLoading) {
     return (
@@ -60,28 +60,23 @@ const CalculatorTable: React.FC = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-  const ButtonOptions = ({id}:{id:number}) => (
+  const ButtonOptions = ({ id }: { id: number }) => (
     <div className="flex gap-5 items-center justify-center">
-      <Link href={`/admin/calculator/${id}`} className="bg-gray-500 text-slate-50 py-2 px-6 shadow-md rounded-md text-xl font-bold">
+      <Link
+        href={`/admin/calculator/${id}`}
+        className="bg-gray-500 text-slate-50 py-2 px-6 shadow-md rounded-md text-xl font-bold"
+      >
         Edit
       </Link>
-      <button onClick={() => setShowConfirmModal(true)}>
-        <FaRegTrashAlt
-        className={` shadow-md cursor-pointer text-4xl`}
-        />
+      <button onClick={() => (setShowConfirmModal(true), setId(id))}>
+        <FaRegTrashAlt className={` shadow-md cursor-pointer text-4xl`} />
       </button>
-      <ConfirmModal
-          isOpen={showConfirmModal}
-          onClose={() => setShowConfirmModal(false)}
-          onConfirm={() => {
-            setShowConfirmModal(false);
-            deleteCalculator(id)
-          }}
-        />
+     
     </div>
   );
   const ConfirmModal: React.FC<{
     isOpen: boolean;
+  
     onClose: () => void;
     onConfirm: () => void;
   }> = ({ isOpen, onClose, onConfirm }) => {
@@ -91,7 +86,9 @@ const CalculatorTable: React.FC = () => {
       <div className="fixed inset-0  bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white p-6 rounded-lg shadow-xl">
           <h3 className="text-4xl font-bold mb-4">Confirm Deletion</h3>
-          <p className="mb-6 text-3xl">Are you sure you want to delete this field?</p>
+          <p className="mb-6 text-3xl">
+            Are you sure you want to delete this field?
+          </p>
           <div className="flex justify-end  gap-4">
             <button
               onClick={onClose}
@@ -103,7 +100,7 @@ const CalculatorTable: React.FC = () => {
               onClick={onConfirm}
               className="px-4 py-2 bg-red-500 text-3xl text-white rounded-md"
             >
-              Delete
+              Delete {id}
             </button>
           </div>
         </div>
@@ -133,13 +130,21 @@ const CalculatorTable: React.FC = () => {
                 {item.name}
               </td>
               <td className="text-2xl p-2 capitalize text-center font-bold text-gray-600 py-4">
-                <ButtonOptions id={item.id}/>
+                <ButtonOptions id={item.id} />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      
+      <ConfirmModal
+
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={() => {
+          deleteCalculator(id);
+          setShowConfirmModal(false);
+        }}
+      />
     </div>
   );
 };

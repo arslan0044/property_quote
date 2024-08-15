@@ -48,6 +48,7 @@ model Token {
 model Calculator {
   id            Int             @id @default(autoincrement())
   name          String
+  url           String
   quoteTypes    QuoteType[]
 }
 

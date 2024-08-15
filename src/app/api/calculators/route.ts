@@ -7,7 +7,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const { name } = await request.json();
-  const newCalculator = await prisma.calculator.create({ data: { name } });
+  const { name, url } = await request.json();
+  const newCalculator = await prisma.calculator.create({ data: { name:name, url:url } });
   return NextResponse.json(newCalculator, { status: 201 });
 }
